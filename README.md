@@ -18,7 +18,7 @@ The script is made available under the MIT licence.
   * Let's Encrypt SSL
 
 ## Usage
-### Deploy
+### Deploy server
 ```sh
 $ script.sh --deploy email hostname
 ```
