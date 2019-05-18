@@ -284,13 +284,13 @@ sdms_new() {
     fi
 
     # Check domain is not already added to server
-    if [ -d "/srv/www/$sdms_domain" -o -d "/srv/www/$sdms_redirect_domain" ]; then
+    if [ -d "$sdms_www/$sdms_domain" -o -d "$sdms_www/$sdms_redirect_domain" ]; then
         echo "$sdms_cmd found domain already exists" >&2
         exit 1
     fi
 
     # Create other variables
-    sdms_home="/srv/www/$sdms_domain"
+    sdms_home="$sdms_www/$sdms_domain"
     sdms_username="$(echo $sdms_domain | sed -e 's/\./_/g' | head -c 32)"
     sdms_db_pass="$(sdms_pass 32)"
 
@@ -468,13 +468,13 @@ sdms_ssl() {
     fi
 
     # Check domain is added to server
-    if [ ! -d "/srv/www/$sdms_domain" ]; then
+    if [ ! -d "$sdms_www/$sdms_domain" ]; then
         echo "$sdms_cmd domain does not exist" >&2
         exit 1
     fi
 
     # Create other variables
-    sdms_home="/srv/www/$sdms_domain"
+    sdms_home="$sdms_www/$sdms_domain"
 
     # Generate SSL certificate
     certbot certonly --webroot -n -q --renew-hook "systemctl reload nginx" -w "$sdms_home" -d "$sdms_domain" -d "$sdms_redirect_domain" || {
@@ -599,13 +599,13 @@ sdms_delete() {
     sdms_domain="$1"
 
     # Check domain is added to server
-    if [ ! -d "/srv/www/$sdms_domain" ]; then
+    if [ ! -d "$sdms_www/$sdms_domain" ]; then
         echo "$sdms_cmd domain does not exist" >&2
         exit 1
     fi
 
 	# Create other variables
-    sdms_home="/srv/www/$sdms_domain"
+    sdms_home="$sdms_www/$sdms_domain"
     sdms_username="$(echo $sdms_domain | sed -e 's/\./_/g' | head -c 32)"
 
 	# Disable NGINX config
