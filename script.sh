@@ -1,4 +1,6 @@
 #!/bin/sh
+# MIT License
+# Copyright (c) 2019 Jacob Gelling
 
 # Declare variables
 sdms_cmd="$(basename $0)"
