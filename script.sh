@@ -596,7 +596,7 @@ sdms_delete() {
 	# Create other variables
     sdms_home="/srv/www/$sdms_domain"
     sdms_username="$(echo $sdms_domain | sed -e 's/\./_/g' | head -c 32)"
-	
+
 	# Disable NGINX config
 	rm -f "/etc/nginx/sites-enabled/$sdms_domain"
 
@@ -614,10 +614,10 @@ sdms_delete() {
         echo "$sdms_cmd failed to restart PHP-FPM" >&2
         exit 1
     }
-	
+
 	# Delete NGINX config
     rm -f "/etc/nginx/sites-available/$sdms_domain"
-	
+
 	# Delete SSL certificate
 	# rm -rf "/etc/letsencrypt/live/$sdms_domain" "/etc/letsencrypt/archive/$sdms_domain" "/etc/letsencrypt/renewal/$sdms_domain.conf"
 	certbot delete -n -q --cert-name "$sdms_domain"
@@ -632,7 +632,7 @@ sdms_delete() {
         exit 1
     }
     mariadb -e "FLUSH PRIVILEGES;"
-	
+
     # Delete user
     userdel -r "$sdms_username" || {
         echo "$sdms_cmd failed to delete user" >&2
