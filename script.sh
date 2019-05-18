@@ -4,7 +4,7 @@
 
 # Declare variables
 sdms_cmd="$(basename $0)"
-sdms_ver="1.0"
+sdms_ver="1.1"
 sdms_www="/srv/www"
 
 # Get PHP version
