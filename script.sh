@@ -261,7 +261,7 @@ sdms_deploy() {
         exit 1
     fi
 
-    # Create required directories
+    # Create www directory
     mkdir -p "$sdms_www" || {
         echo "$sdms_cmd failed to create required directories" >&2
         exit 1
