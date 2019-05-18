@@ -15,11 +15,11 @@ fi
 
 # Declare help function
 sdms_help() {
-    echo "$sdms_cmd $sdms_ver"
+    echo "SDMS $sdms_ver"
     echo "Usage: $sdms_cmd --deploy email hostname"
-    echo "       $sdms_cmd --new domain..."
-    echo "       $sdms_cmd --ssl domain..."
-    echo "       $sdms_cmd --delete domain..."
+    echo "       $sdms_cmd --new domain"
+    echo "       $sdms_cmd --ssl domain"
+    echo "       $sdms_cmd --delete domain"
 }
 
 # Declare password generation function

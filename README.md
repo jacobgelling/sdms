@@ -18,13 +18,15 @@ The script is made available under the MIT licence.
   * Let's Encrypt SSL
 
 ## Usage
-### Deployment
+### Deploy
 ```sh
 $ script.sh --deploy email hostname
 ```
-The `--deploy` option is intended to be used on a fresh installation. The hostname should be a fully qualified domain name. The email is used for the Let's Encrypt account.
+The `--deploy` option is intended to be run on a fresh installation, installing required packages and performing initial setup.
 
-### Add domain
+The email is used for the Let's Encrypt account. The hostname should be a fully qualified domain name.
+
+### New domain
 ```sh
 $ script.sh --new domain
 ```
@@ -36,7 +38,7 @@ $ script.sh --ssl domain
 ```
 The `--ssl` option uses Let's Encrypt to generate a SSL certificate for the given domain and produces a relevant NGINX configuration file.
 
-### Remove domain
+### Delete domain
 ```sh
 $ script.sh --delete domain
 ```
