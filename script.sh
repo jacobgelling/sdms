@@ -5,6 +5,12 @@ sdms_cmd="$(basename $0)"
 sdms_ver="1.0"
 sdms_www="/srv/www"
 
+# Get PHP version
+sdms_php="7.0"
+if [ -e "/etc/php/7.3/fpm/php.ini" ] && [ -e "/etc/php/7.3/cli/php.ini" ]; then
+    sdms_php="7.3"
+fi
+
 # Declare help function
 sdms_help() {
     echo "$sdms_cmd $sdms_ver"
@@ -46,6 +52,11 @@ sdms_deploy() {
         echo "$sdms_cmd could not install packages" >&2
         exit 1
     }
+
+    # Update PHP version
+    if [ -e "/etc/php/7.3/fpm/php.ini" ] && [ -e "/etc/php/7.3/cli/php.ini" ]; then
+        sdms_php="7.3"
+    fi
 
     # Set hostname
     hostnamectl set-hostname "$sdms_hostname" || {
@@ -224,22 +235,22 @@ sdms_deploy() {
         echo 'include fastcgi.conf;'
     } > /etc/nginx/snippets/php.conf
 
-    if [ -e "/etc/php/7.0/fpm/php.ini" ] && [ -e "/etc/php/7.0/cli/php.ini" ]; then
+    if [ -e "/etc/php/$sdms_php/fpm/php.ini" ] && [ -e "/etc/php/$sdms_php/cli/php.ini" ]; then
         # Hide PHP version
-        sed -i -e 's/expose_php = On/expose_php = Off/g' /etc/php/7.0/fpm/php.ini /etc/php/7.0/cli/php.ini
+        sed -i -e 's/expose_php = On/expose_php = Off/g' "/etc/php/$sdms_php/fpm/php.ini" "/etc/php/$sdms_php/cli/php.ini"
 
         # Set PHP maximum file upload and POST size
-        sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 32M/g' /etc/php/7.0/fpm/php.ini /etc/php/7.0/cli/php.ini
-        sed -i -e 's/post_max_size = 8M/post_max_size = 34M/g' /etc/php/7.0/fpm/php.ini /etc/php/7.0/cli/php.ini
+        sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 32M/g' "/etc/php/$sdms_php/fpm/php.ini" "/etc/php/$sdms_php/cli/php.ini"
+        sed -i -e 's/post_max_size = 8M/post_max_size = 34M/g' "/etc/php/$sdms_php/fpm/php.ini" "/etc/php/$sdms_php/cli/php.ini"
 
         # Hide PHP-FPM errors
-        sed -i -e 's/display_errors = On/display_errors = Off/g' /etc/php/7.0/fpm/php.ini
+        sed -i -e 's/display_errors = On/display_errors = Off/g' "/etc/php/$sdms_php/fpm/php.ini"
 
         # Enable PHP strict sessions
-        sed -i -e 's/session.use_strict_mode = 0/session.use_strict_mode = 1/g' /etc/php/7.0/fpm/php.ini /etc/php/7.0/cli/php.ini
+        sed -i -e 's/session.use_strict_mode = 0/session.use_strict_mode = 1/g' "/etc/php/$sdms_php/fpm/php.ini" "/etc/php/$sdms_php/cli/php.ini"
 
         # Restart PHP-FPM
-        systemctl restart php7.0-fpm || {
+        systemctl restart "php$sdms_php-fpm" || {
             echo "$sdms_cmd failed to restart PHP-FPM" >&2
             exit 1
         }
@@ -347,15 +358,15 @@ sdms_new() {
         echo "env[TEMP] = $sdms_home/tmp"
         echo ""
         echo "php_admin_value[session.save_path] = $sdms_home/sessions"
-    } > "/etc/php/7.0/fpm/pool.d/$sdms_domain.conf"
+    } > "/etc/php/$sdms_php/fpm/pool.d/$sdms_domain.conf"
 
     # Disable default PHP-FPM pool
-    if [ -e /etc/php/7.0/fpm/pool.d/www.conf ]; then
-        mv /etc/php/7.0/fpm/pool.d/www.conf /etc/php/7.0/fpm/pool.d/www.conf.disabled
+    if [ -e "/etc/php/$sdms_php/fpm/pool.d/www.conf" ]; then
+        mv "/etc/php/$sdms_php/fpm/pool.d/www.conf" "/etc/php/$sdms_php/fpm/pool.d/www.conf.disabled"
     fi
 
     # Restart PHP-FPM
-    systemctl restart php7.0-fpm || {
+    systemctl restart "php$sdms_php-fpm" || {
         echo "$sdms_cmd failed to restart PHP-FPM" >&2
         exit 1
     }
@@ -607,10 +618,10 @@ sdms_delete() {
     }
 
     # Delete PHP pool
-    rm -f "/etc/php/7.0/fpm/pool.d/$sdms_domain.conf"
+    rm -f "/etc/php/$sdms_php/fpm/pool.d/$sdms_domain.conf"
 
     # Restart PHP-FPM
-    systemctl restart php7.0-fpm || {
+    systemctl restart "php$sdms_php-fpm" || {
         echo "$sdms_cmd failed to restart PHP-FPM" >&2
         exit 1
     }
