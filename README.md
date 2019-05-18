@@ -1,5 +1,5 @@
 # SDMS
-A simple LEMP (Linux, NGINX, MariaDB, PHP) server deployment and management script for Debian 9. Intended for virtual hosting enviroments, this script enables the automated creation and removal of domains in the LEMP stack.
+A simple LEMP (Linux, NGINX, MariaDB, PHP) server deployment and management script for Debian 9 (Strech) and 10 (Buster). Intended for virtual hosting environments, this script enables the automated creation and removal of domains in the LEMP stack.
 
 There are no user repository or compilation requirements, solely using packages provided and maintained by Debian for ease of upgrade and security.
 
