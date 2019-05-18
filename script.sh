@@ -50,7 +50,7 @@ sdms_deploy() {
     }
 
     # Install packages
-    DEBIAN_FRONTEND=noninteractive apt-get -qy install apt-transport-https nftables ntp sudo curl lsb-release gnupg2 wget nano git zip unzip unattended-upgrades software-properties-common ca-certificates openssl openssh-server openssh-client certbot mariadb-client mariadb-server nginx libnginx-mod-http-headers-more-filter libnginx-mod-http-uploadprogress composer php-cli php-fpm php-curl php-gd php-json php-mbstring php-mcrypt php-mysql php-xml php-zip || {
+    DEBIAN_FRONTEND=noninteractive apt-get -qy install apt-transport-https nftables ntp sudo curl lsb-release gnupg2 wget nano git zip unzip unattended-upgrades software-properties-common ca-certificates openssl openssh-server openssh-client certbot mariadb-client mariadb-server nginx libnginx-mod-http-headers-more-filter libnginx-mod-http-uploadprogress composer php-cli php-fpm php-curl php-gd php-json php-mbstring php-mysql php-xml php-zip || {
         echo "$sdms_cmd could not install packages" >&2
         exit 1
     }
