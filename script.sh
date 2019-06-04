@@ -135,7 +135,7 @@ sdms_deploy() {
         exit 1
     }
 
-    # Save MariaDB credentials to file
+    # Save MariaDB credentials to .my.cnf file
     touch "$HOME/.my.cnf"
     chmod o-r,o-w "$HOME/.my.cnf"
     {
@@ -144,6 +144,9 @@ sdms_deploy() {
         echo "user=root"
         echo "password=$sdms_mariadb_password"
     } > "$HOME/.my.cnf"
+
+    # Save MariaDB credentials to debian config
+    sed -i -e "s/password = /password = $sdms_mariadb_password/g" /etc/mysql/debian.cnf
 
     # Secure MariaDB server
     mariadb -e "DELETE FROM mysql.user WHERE User='';"
