@@ -80,7 +80,7 @@ sdms_deploy() {
 
     # Disable Debian banner suffix on SSH server
     if [ -e /etc/ssh/sshd_config ]; then
-        if ! grep -q "DebianBanner +no" "/etc/ssh/sshd_config"; then
+        if ! grep -q "DebianBanner no" "/etc/ssh/sshd_config"; then
             echo "DebianBanner no" >> "/etc/ssh/sshd_config"
             systemctl restart ssh || {
                 echo "$sdms_cmd could not restart ssh" >&2
