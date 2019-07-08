@@ -125,26 +125,6 @@ sdms_deploy() {
         exit 1
     }
 
-    # Set MariaDB root password
-    sdms_mariadb_password="$(sdms_pass 32)"
-    mysqladmin -u root password "$sdms_mariadb_password" || {
-        echo "$sdms_cmd failed to set MariaDB root password" >&2
-        exit 1
-    }
-
-    # Save MariaDB credentials to .my.cnf file
-    touch "$HOME/.my.cnf"
-    chmod o-r,o-w "$HOME/.my.cnf"
-    {
-        echo "[client]"
-        echo "host=localhost"
-        echo "user=root"
-        echo "password=$sdms_mariadb_password"
-    } > "$HOME/.my.cnf"
-
-    # Save MariaDB credentials to debian config
-    sed -i -e "s/password = /password = $sdms_mariadb_password/g" /etc/mysql/debian.cnf
-
     # Secure MariaDB server
     mariadb -e "DELETE FROM mysql.user WHERE User='';"
     mariadb -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
