@@ -87,9 +87,6 @@ sdms_deploy() {
                 exit 1
             }
         fi
-    else
-        echo "$sdms_cmd could not find ssh config file" >&2
-        exit 1
     fi
 
     # Configure nftables
