@@ -288,16 +288,18 @@ sdms_new() {
         exit 1
     }
 
+    # Add www-data to group
+    adduser www-data "$sdms_username" || {
+        echo "$sdms_cmd failed to add www-data to group" >&2
+        exit 1
+    }
+
     # Create required directories
     sudo -u "$sdms_username" mkdir "$sdms_home/sessions" "$sdms_home/tmp" "$sdms_home/root" "$sdms_home/root/public" "$sdms_home/.well-known" "$sdms_home/.ssh" || {
         echo "$sdms_cmd failed to create required directories" >&2
         exit 1
     }
-    chown root:root "$sdms_home/.well-known" || {
-        echo "$sdms_cmd failed to set owner on directories" >&2
-        exit 1
-    }
-    chmod o-r,o-w,o-x "$sdms_home/tmp" "$sdms_home/sessions" || {
+    chmod -R o-r,o-w,o-x "$sdms_home" || {
         echo "$sdms_cmd failed to set permissions on directories" >&2
         exit 1
     }
@@ -437,9 +439,9 @@ sdms_new() {
         exit 1
     }
 
-    # Reload NGINX
-    systemctl reload nginx || {
-        echo "$sdms_cmd failed to reload NGINX" >&2
+    # Restart NGINX
+    systemctl restart nginx || {
+        echo "$sdms_cmd failed to restart NGINX" >&2
         exit 1
     }
 }
@@ -598,9 +600,15 @@ sdms_delete() {
 	# Disable NGINX config
 	rm -f "/etc/nginx/sites-enabled/$sdms_domain"
 
-    # Reload NGINX
-    systemctl reload nginx || {
-        echo "$sdms_cmd failed to reload NGINX" >&2
+	# Create username variable
+    sdms_username="$(echo $sdms_domain | sed -e 's/\./_/g' | head -c 32)"
+
+    # Remove www-data from group
+    deluser www-data "$sdms_username"
+
+    # Restart NGINX
+    systemctl restart nginx || {
+        echo "$sdms_cmd failed to restart NGINX" >&2
         exit 1
     }
 
@@ -618,9 +626,6 @@ sdms_delete() {
 
 	# Delete SSL certificate
 	certbot delete -n -q --cert-name "$sdms_domain"
-
-	# Create username variable
-    sdms_username="$(echo $sdms_domain | sed -e 's/\./_/g' | head -c 32)"
 
     # Delete MariaDB database and user
     mariadb -e "DROP DATABASE IF EXISTS $sdms_username;" || {
