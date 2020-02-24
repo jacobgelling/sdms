@@ -597,10 +597,10 @@ sdms_delete() {
         exit 1
     fi
 
-	# Disable NGINX config
-	rm -f "/etc/nginx/sites-enabled/$sdms_domain"
+    # Disable NGINX config
+    rm -f "/etc/nginx/sites-enabled/$sdms_domain"
 
-	# Create username variable
+    # Create username variable
     sdms_username="$(echo $sdms_domain | sed -e 's/\./_/g' | head -c 32)"
 
     # Remove www-data from group
@@ -621,14 +621,14 @@ sdms_delete() {
         exit 1
     }
 
-	# Delete NGINX config
+    # Delete NGINX config
     rm -f "/etc/nginx/sites-available/$sdms_domain"
 
-	# Delete SSL certificate
-	certbot delete -n -q --cert-name "$sdms_domain"
+    # Delete SSL certificate
+    certbot delete -n -q --cert-name "$sdms_domain"
 
     # Delete MariaDB database and user
-    mariadb -e "DROP DATABASE IF EXISTS $sdms_username;" || {
+    mariadb -e "DROP DATABASE IF EXISTS \`$sdms_username\`;" || {
         echo "$sdms_cmd failed to delete database" >&2
         exit 1
     }
