@@ -305,11 +305,11 @@ sdms_new() {
     }
 
     # Create MariaDB database and user
-    mariadb -e "CREATE DATABASE $sdms_username;" || {
+    mariadb -e "CREATE DATABASE \`$sdms_username\`;" || {
         echo "$sdms_cmd failed to create database" >&2
         exit 1
     }
-    mariadb -e "GRANT ALL ON $sdms_username.* TO '$sdms_username'@'localhost' IDENTIFIED BY '$sdms_db_pass';" || {
+    mariadb -e "GRANT ALL ON \`$sdms_username\`.* TO '$sdms_username'@'localhost' IDENTIFIED BY '$sdms_db_pass';" || {
         echo "$sdms_cmd failed to create database user" >&2
         exit 1
     }
