@@ -11,6 +11,8 @@ sdms_www="/srv/www"
 sdms_php="7.0"
 if [ -e "/etc/php/7.3/fpm/php.ini" ] && [ -e "/etc/php/7.3/cli/php.ini" ]; then
     sdms_php="7.3"
+elif  -e "/etc/php/7.4/fpm/php.ini" ] && [ -e "/etc/php/7.4/cli/php.ini" ]; then
+    sdms_php="7.4"
 fi
 
 # Declare help function
@@ -58,6 +60,8 @@ sdms_deploy() {
     # Update PHP version
     if [ -e "/etc/php/7.3/fpm/php.ini" ] && [ -e "/etc/php/7.3/cli/php.ini" ]; then
         sdms_php="7.3"
+    elif  -e "/etc/php/7.4/fpm/php.ini" ] && [ -e "/etc/php/7.4/cli/php.ini" ]; then
+        sdms_php="7.4"
     fi
 
     # Set hostname
