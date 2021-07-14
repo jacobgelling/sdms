@@ -1,7 +1,7 @@
 # SDMS
-A simple LEMP (Linux, NGINX, MariaDB, PHP) server deployment and management script for Debian 9 (Stretch) and 10 (Buster). Intended for virtual hosting environments, this script enables the automated creation and removal of domains in the LEMP stack.
+A simple LEMP (Linux, NGINX, MariaDB, PHP) server deployment and management script supporting Debian 9 (Stretch), 10 (Buster) and 11 (Bullseye). Intended for virtual hosting environments, this script enables the automated creation and removal of domains in the LEMP stack.
 
-There are no user repository or compilation requirements, solely using packages provided and maintained by Debian for ease of upgrade and security.
+There are no deb repository or compilation requirements, solely using packages provided and maintained by Debian for ease of upgrade and security.
 
 The script is made available under the MIT licence.
 
@@ -16,7 +16,7 @@ The script is made available under the MIT licence.
   * Add domain
   * Remove domain
   * Let's Encrypt SSL
-* Backup of databases, SSL certificates, website files and configuartion files
+* Backup of databases, SSL certificates, website files and configuration files
 
 ## Usage
 ### Deploy server
@@ -50,4 +50,4 @@ The `--delete` option simply deletes the given domain, including it's web direct
 ```sh
 $ script.sh --backup
 ```
-The `--backup` option performs a dump of all databases, and a backup of all relevant website and configuration files.
+The `--backup` option performs a dump of all databases, and a backup of all SSL certificates, website files and configuration files.
