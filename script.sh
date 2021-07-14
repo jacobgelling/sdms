@@ -4,7 +4,6 @@
 
 # Declare variables
 sdms_cmd="$(basename $0)"
-sdms_ver="1.1"
 sdms_www="/srv/www"
 
 # Get PHP version
@@ -17,11 +16,12 @@ fi
 
 # Declare help function
 sdms_help() {
-    echo "SDMS $sdms_ver"
+    echo "SDMS"
     echo "Usage: $sdms_cmd --deploy email hostname"
     echo "       $sdms_cmd --new domain"
     echo "       $sdms_cmd --ssl domain"
     echo "       $sdms_cmd --delete domain"
+    echo "       $sdms_cmd --backup"
 }
 
 # Declare password generation function
@@ -649,6 +649,16 @@ sdms_delete() {
     }
 }
 
+sdms_backup() {
+    sdms_time_backup = "$(date +'%Y-%m-%d_%H%M')"
+
+    # Dump databases
+    mysqldump --all-databases | gzip -c > "sdms_backup_$sdms_time_backup.sql.gz"
+
+    # Backup files, excluding temporary files
+    tar --exclude="/srv/www/*/tmp/*" --exclude="/srv/www/*/sessions/*" --exclude="/srv/www/*/.well-known/acme-challenge/*" --exclude="/srv/www/*/root/storage/logs/*" --exclude="/etc/letsencrypt/archive/*" -zcvf "sdms_backup_$sdms_time_backup.tar.gz" "/etc/letsencrypt" "/etc/nginx" "/etc/php/$sdms_php/cli" "/etc/php/$sdms_php/fpm" "$sdms_www" "/etc/nftables.conf"
+}
+
 # Ensure script is running as root
 if [ "$(id -u)" != "0" ]; then
     echo "$sdms_cmd must be run as root" >&2
@@ -692,6 +702,10 @@ while test -n "$1"; do
             exit 1
         fi
         sdms_delete "$2"
+        break
+        ;;
+        -b|--backup)
+        sdms_backup
         break
         ;;
         -h|--help)

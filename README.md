@@ -16,6 +16,7 @@ The script is made available under the MIT licence.
   * Add domain
   * Remove domain
   * Let's Encrypt SSL
+* Backup of databases, SSL certificates, website files and configuartion files
 
 ## Usage
 ### Deploy server
@@ -36,10 +37,17 @@ The `--new` option creates a full LEMP virtual host for the given domain, which 
 ```sh
 $ script.sh --ssl domain
 ```
-The `--ssl` option uses Let's Encrypt to generate a SSL certificate for the given domain and produces a relevant NGINX configuration file.
+The `--ssl` option uses Let's Encrypt to generate a SSL certificate for the given domain and produces a relevant NGINX configuration file. Please note this overwrites the current configuration file for the domain.
 
 ### Delete domain
 ```sh
 $ script.sh --delete domain
 ```
 The `--delete` option simply deletes the given domain, including it's web directory, database, relevant configuration files, and SSL certificates.
+
+### Backup
+
+```sh
+$ script.sh --backup
+```
+The `--backup` option performs a dump of all databases, and a backup of all relevant website and configuration files.
