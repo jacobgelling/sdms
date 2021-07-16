@@ -656,7 +656,7 @@ sdms_backup() {
     mysqldump --all-databases | gzip -c > "sdms-backup-$sdms_time_backup.sql.gz"
 
     # Backup files, excluding temporary files
-    tar --exclude="/srv/www/*/tmp/*" --exclude="/srv/www/*/sessions/*" --exclude="/srv/www/*/.well-known/acme-challenge/*" --exclude="/srv/www/*/root/storage/logs/*" --exclude="/etc/letsencrypt/archive/*" -zcvf "sdms-backup-$sdms_time_backup.tar.gz" "/etc/letsencrypt" "/etc/nginx" "/etc/php/$sdms_php/cli" "/etc/php/$sdms_php/fpm" "$sdms_www" "/etc/nftables.conf"
+    tar --exclude="/srv/www/*/tmp/*" --exclude="/srv/www/*/sessions/*" --exclude="/srv/www/*/.well-known/acme-challenge/*" --exclude="/srv/www/*/root/storage/logs/*" -zcvf "sdms-backup-$sdms_time_backup.tar.gz" "/etc/letsencrypt" "/etc/nginx" "/etc/php/$sdms_php/cli" "/etc/php/$sdms_php/fpm" "$sdms_www" "/etc/nftables.conf"
 }
 
 # Ensure script is running as root
