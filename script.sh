@@ -198,7 +198,7 @@ sdms_deploy() {
         echo 'ssl_prefer_server_ciphers on;'
         echo ''
         echo 'ssl_session_cache shared:SSL:10m;'
-        echo 'ssl_session_timeout 10m;'
+        echo 'ssl_session_timeout 2h;'
         echo ''
         echo 'ssl_stapling on;'
         echo 'ssl_stapling_verify on;'
