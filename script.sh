@@ -664,6 +664,12 @@ if [ "$(id -u)" != "0" ]; then
     exit 1
 fi
 
+# Ensure script is running on Debian 9 or later
+if [ ! -f '/etc/debian_version' ] || [ $(sed 's/\..*//' '/etc/debian_version') -lt 9 ]; then
+    echo "$sdms_cmd must be run on Debian 9 or later" >&2
+    exit 1
+fi
+
 # Parse CLI parameters and call respective functions
 if [ -z "$1" ]; then
     sdms_help
