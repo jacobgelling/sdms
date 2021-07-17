@@ -208,8 +208,8 @@ sdms_deploy() {
 
     # Create NGINX PHP snippet
     {
-        echo '# Set max upload size'
-        echo 'client_max_body_size 34m;'
+        echo '# Set max body size'
+        echo 'client_max_body_size 38m;'
         echo ''
         echo '# Regex to split $uri to $fastcgi_script_name and $fastcgi_path'
         echo 'fastcgi_split_path_info ^(.+\.php)(/.+)$;'
@@ -225,18 +225,19 @@ sdms_deploy() {
         echo 'include fastcgi.conf;'
     } > /etc/nginx/snippets/php.conf
 
+    # Configure PHP
     if [ -f "/etc/php/$sdms_php/fpm/php.ini" ] && [ -f "/etc/php/$sdms_php/cli/php.ini" ]; then
-        # Hide PHP version
+        # Hide version
         sed -i -e 's/expose_php = On/expose_php = Off/g' "/etc/php/$sdms_php/fpm/php.ini" "/etc/php/$sdms_php/cli/php.ini"
 
-        # Set PHP maximum file upload and POST size
+        # Set maximum file upload and post size
         sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 32M/g' "/etc/php/$sdms_php/fpm/php.ini" "/etc/php/$sdms_php/cli/php.ini"
-        sed -i -e 's/post_max_size = 8M/post_max_size = 34M/g' "/etc/php/$sdms_php/fpm/php.ini" "/etc/php/$sdms_php/cli/php.ini"
+        sed -i -e 's/post_max_size = 8M/post_max_size = 38M/g' "/etc/php/$sdms_php/fpm/php.ini" "/etc/php/$sdms_php/cli/php.ini"
 
         # Hide PHP-FPM errors
         sed -i -e 's/display_errors = On/display_errors = Off/g' "/etc/php/$sdms_php/fpm/php.ini"
 
-        # Enable PHP strict sessions
+        # Enable strict sessions
         sed -i -e 's/session.use_strict_mode = 0/session.use_strict_mode = 1/g' "/etc/php/$sdms_php/fpm/php.ini" "/etc/php/$sdms_php/cli/php.ini"
 
         # Restart PHP-FPM
