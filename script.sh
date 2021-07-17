@@ -8,9 +8,9 @@ sdms_www="/srv/www"
 
 # Get PHP version
 sdms_php="7.0"
-if [ -e "/etc/php/7.3/fpm/php.ini" ] && [ -e "/etc/php/7.3/cli/php.ini" ]; then
+if [ -f "/etc/php/7.3/fpm/php.ini" ] && [ -f "/etc/php/7.3/cli/php.ini" ]; then
     sdms_php="7.3"
-elif [ -e "/etc/php/7.4/fpm/php.ini" ] && [ -e "/etc/php/7.4/cli/php.ini" ]; then
+elif [ -f "/etc/php/7.4/fpm/php.ini" ] && [ -f "/etc/php/7.4/cli/php.ini" ]; then
     sdms_php="7.4"
 fi
 
@@ -58,9 +58,9 @@ sdms_deploy() {
     }
 
     # Update PHP version
-    if [ -e "/etc/php/7.3/fpm/php.ini" ] && [ -e "/etc/php/7.3/cli/php.ini" ]; then
+    if [ -f "/etc/php/7.3/fpm/php.ini" ] && [ -f "/etc/php/7.3/cli/php.ini" ]; then
         sdms_php="7.3"
-    elif [ -e "/etc/php/7.4/fpm/php.ini" ] && [ -e "/etc/php/7.4/cli/php.ini" ]; then
+    elif [ -f "/etc/php/7.4/fpm/php.ini" ] && [ -f "/etc/php/7.4/cli/php.ini" ]; then
         sdms_php="7.4"
     fi
 
@@ -83,7 +83,7 @@ sdms_deploy() {
     }
 
     # Disable Debian banner suffix on SSH server
-    if [ -e /etc/ssh/sshd_config ]; then
+    if [ -f /etc/ssh/sshd_config ]; then
         if ! grep -q "DebianBanner no" "/etc/ssh/sshd_config"; then
             echo "DebianBanner no" >> "/etc/ssh/sshd_config"
             systemctl restart ssh || {
@@ -144,8 +144,8 @@ sdms_deploy() {
         exit 1
     }
 
-    if [ -e "/etc/nginx/nginx.conf" ]; then
         # Hide NGINX version
+    if [ -f /etc/nginx/nginx.conf ]; then
         sed -i -e 's/# server_tokens off;/server_tokens off;\n\tmore_clear_headers Server;/g' /etc/nginx/nginx.conf
 
         # Enable gzip
@@ -225,7 +225,7 @@ sdms_deploy() {
         echo 'include fastcgi.conf;'
     } > /etc/nginx/snippets/php.conf
 
-    if [ -e "/etc/php/$sdms_php/fpm/php.ini" ] && [ -e "/etc/php/$sdms_php/cli/php.ini" ]; then
+    if [ -f "/etc/php/$sdms_php/fpm/php.ini" ] && [ -f "/etc/php/$sdms_php/cli/php.ini" ]; then
         # Hide PHP version
         sed -i -e 's/expose_php = On/expose_php = Off/g' "/etc/php/$sdms_php/fpm/php.ini" "/etc/php/$sdms_php/cli/php.ini"
 
@@ -355,7 +355,7 @@ sdms_new() {
     } > "/etc/php/$sdms_php/fpm/pool.d/$sdms_domain.conf"
 
     # Disable default PHP-FPM pool
-    if [ -e "/etc/php/$sdms_php/fpm/pool.d/www.conf" ]; then
+    if [ -f "/etc/php/$sdms_php/fpm/pool.d/www.conf" ]; then
         mv "/etc/php/$sdms_php/fpm/pool.d/www.conf" "/etc/php/$sdms_php/fpm/pool.d/www.conf.disabled"
     fi
 
