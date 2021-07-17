@@ -189,7 +189,7 @@ sdms_deploy() {
 
     # Create NGINX SSL snippet
     {
-        if grep -q "10.0" "/etc/debian_version"; then
+        if [ $(sed 's/\..*//' '/etc/debian_version') -ge 10 ]; then
             echo 'ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;'
         else
             echo 'ssl_protocols TLSv1 TLSv1.1 TLSv1.2;'
