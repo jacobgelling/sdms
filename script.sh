@@ -139,7 +139,7 @@ sdms_deploy() {
     mariadb -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
     mariadb -e "FLUSH PRIVILEGES;"
 
-    # Generate Diffie–Hellman parameters
+    # Generate Diffie–Hellman parameters
     touch /etc/nginx/dhparams.pem
     chmod o-r,o-w /etc/nginx/dhparams.pem
     openssl dhparam -out /etc/nginx/dhparams.pem 2048 || {
