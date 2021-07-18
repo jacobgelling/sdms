@@ -82,15 +82,18 @@ sdms_deploy() {
         exit 1
     }
 
-    # Disable Debian banner suffix on SSH server
-    if [ -f /etc/ssh/sshd_config ]; then
-        if ! grep -q "DebianBanner no" "/etc/ssh/sshd_config"; then
-            echo "DebianBanner no" >> "/etc/ssh/sshd_config"
-            systemctl restart ssh || {
-                echo "$sdms_cmd could not restart ssh" >&2
-                exit 1
-            }
-        fi
+    # Disable extra version suffix in SSH banner
+    if [ -f /etc/ssh/sshd_config ] && ! grep -q "DebianBanner" /etc/ssh/sshd_config; then
+        {
+            echo "" 
+            echo "# Specifies whether the distribution-specified extra version suffix is"
+            echo "# included during initial protocol handshake. The default is yes."
+            echo "DebianBanner no"
+        } >> "/etc/ssh/sshd_config"
+        systemctl restart ssh || {
+            echo "$sdms_cmd could not restart ssh" >&2
+            exit 1
+        }
     fi
 
     # Configure nftables
