@@ -21,7 +21,7 @@ The script is made available under the MIT licence.
 ## Usage
 ### Deploy server
 ```sh
-$ script.sh --deploy email hostname
+$ sdms.sh --deploy email hostname
 ```
 The `--deploy` option is intended to be run on a fresh installation, installing required packages and performing initial setup.
 
@@ -29,25 +29,25 @@ The email is used for the Let's Encrypt account. The hostname should be a fully 
 
 ### New domain
 ```sh
-$ script.sh --new domain
+$ sdms.sh --new domain
 ```
 The `--new` option creates a full LEMP virtual host for the given domain, which includes a web directory in `/srv/www`, a database, and a PHP-FPM pool.
 
 ### Generate SSL
 ```sh
-$ script.sh --ssl domain
+$ sdms.sh --ssl domain
 ```
 The `--ssl` option uses Let's Encrypt to generate a SSL certificate for the given domain and produces a relevant NGINX configuration file. Please note this overwrites the current configuration file for the domain.
 
 ### Delete domain
 ```sh
-$ script.sh --delete domain
+$ sdms.sh --delete domain
 ```
 The `--delete` option simply deletes the given domain, including it's web directory, database, relevant configuration files, and SSL certificates.
 
 ### Backup
 
 ```sh
-$ script.sh --backup
+$ sdms.sh --backup
 ```
 The `--backup` option performs a dump of all databases, and a backup of all SSL certificates, website files and configuration files.
