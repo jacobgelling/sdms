@@ -166,7 +166,7 @@ sdms_deploy() {
         exit 1
     }
 
-        # Hide NGINX version
+    # Hide NGINX version
     if [ -f /etc/nginx/nginx.conf ]; then
         sed -i -e 's/# server_tokens off;/server_tokens off;\n\tmore_clear_headers Server;/g' /etc/nginx/nginx.conf
 
