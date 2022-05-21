@@ -83,6 +83,18 @@ sdms_deploy() {
         echo "$sdms_cmd could not enable unattended upgrades" >&2
         exit 1
     }
+    if [ -f /etc/apt/apt.conf.d/50unattended-upgrades ]; then
+        sed -i -e 's|//Unattended-Upgrade::Automatic-Reboot "false";|Unattended-Upgrade::Automatic-Reboot "true";|g' /etc/apt/apt.conf.d/50unattended-upgrades
+        sed -i -e 's|//Unattended-Upgrade::Automatic-Reboot-WithUsers "true";|Unattended-Upgrade::Automatic-Reboot-WithUsers "false";|g' /etc/apt/apt.conf.d/50unattended-upgrades
+        sed -i -e 's|//Unattended-Upgrade::Automatic-Reboot-Time "02:00";|Unattended-Upgrade::Automatic-Reboot-Time "02:00";|g' /etc/apt/apt.conf.d/50unattended-upgrades
+    else
+        echo "$sdms_cmd could not find unattended upgrades config file" >&2
+        exit 1
+    fi
+    systemctl restart unattended-upgrades.service || {
+        echo "$sdms_cmd failed to restart unattended-upgrades.service" >&2
+        exit 1
+    }
 
     # Disable extra version suffix in SSH banner
     if [ -f /etc/ssh/sshd_config ] && ! grep -q "DebianBanner" /etc/ssh/sshd_config; then
