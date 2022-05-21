@@ -457,6 +457,9 @@ sdms_new() {
         echo "sdms failed to restart nginx.service" >&2
         exit 1
     }
+
+    # Configure git
+    sudo -u "$sdms_username" git config --global pull.rebase false
 }
 
 # SSL domain function
