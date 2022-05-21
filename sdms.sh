@@ -83,21 +83,22 @@ sdms_deploy() {
 
     # Enable unattended upgrades
     DEBIAN_FRONTEND=noninteractive dpkg-reconfigure -plow unattended-upgrades || {
-        echo "$sdms_cmd could not enable unattended upgrades" >&2
+        echo "$sdms_cmd could not enable unattended-upgrades" >&2
         exit 1
     }
     if [ -f /etc/apt/apt.conf.d/50unattended-upgrades ]; then
         sed -i -e 's|//Unattended-Upgrade::Automatic-Reboot "false";|Unattended-Upgrade::Automatic-Reboot "true";|g' /etc/apt/apt.conf.d/50unattended-upgrades
         sed -i -e 's|//Unattended-Upgrade::Automatic-Reboot-WithUsers "true";|Unattended-Upgrade::Automatic-Reboot-WithUsers "false";|g' /etc/apt/apt.conf.d/50unattended-upgrades
         sed -i -e 's|//Unattended-Upgrade::Automatic-Reboot-Time "02:00";|Unattended-Upgrade::Automatic-Reboot-Time "02:00";|g' /etc/apt/apt.conf.d/50unattended-upgrades
+
+        systemctl restart unattended-upgrades.service || {
+            echo "$sdms_cmd failed to restart unattended-upgrades.service" >&2
+            exit 1
+        }
     else
-        echo "$sdms_cmd could not find unattended upgrades config file" >&2
+        echo "$sdms_cmd could not find /etc/apt/apt.conf.d/50unattended-upgrades" >&2
         exit 1
     fi
-    systemctl restart unattended-upgrades.service || {
-        echo "$sdms_cmd failed to restart unattended-upgrades.service" >&2
-        exit 1
-    }
 
     # Disable extra version suffix in SSH banner
     if [ -f /etc/ssh/sshd_config ] && ! grep -q "DebianBanner" /etc/ssh/sshd_config; then
@@ -144,8 +145,8 @@ sdms_deploy() {
         echo "$sdms_cmd failed to load nftables config" >&2
         exit 1
     }
-    systemctl enable nftables || {
-        echo "$sdms_cmd failed to enable nftables service" >&2
+    systemctl enable nftables.service || {
+        echo "$sdms_cmd failed to enable nftables.service" >&2
         exit 1
     }
 
@@ -194,7 +195,7 @@ sdms_deploy() {
             exit 1
         }
     else
-        echo "$sdms_cmd could not find file /etc/nginx/nginx.conf" >&2
+        echo "$sdms_cmd could not find /etc/nginx/nginx.conf" >&2
         exit 1
     fi
 
@@ -246,7 +247,7 @@ sdms_deploy() {
     } > /etc/nginx/snippets/php.conf
 
     # Configure PHP
-    if [ -f "/etc/php/$sdms_php/fpm/php.ini" ] && [ -f "/etc/php/$sdms_php/cli/php.ini" ]; then
+    if [ -f "/etc/php/$sdms_php/cli/php.ini" ] && [ -f "/etc/php/$sdms_php/fpm/php.ini" ]; then
         # Hide version
         sed -i -e 's/expose_php = On/expose_php = Off/g' "/etc/php/$sdms_php/fpm/php.ini" "/etc/php/$sdms_php/cli/php.ini"
 
@@ -261,24 +262,24 @@ sdms_deploy() {
         sed -i -e 's/session.use_strict_mode = 0/session.use_strict_mode = 1/g' "/etc/php/$sdms_php/fpm/php.ini" "/etc/php/$sdms_php/cli/php.ini"
 
         # Restart PHP-FPM
-        systemctl restart "php$sdms_php-fpm" || {
-            echo "$sdms_cmd failed to restart PHP-FPM" >&2
+        systemctl restart "php$sdms_php-fpm.service" || {
+            echo "$sdms_cmd failed to restart php$sdms_php-fpm.service" >&2
             exit 1
         }
     else
-        echo "$sdms_cmd could not find PHP config files" >&2
+        echo "$sdms_cmd could not find /etc/php/$sdms_php/cli/php.ini and /etc/php/$sdms_php/fpm/php.ini" >&2
         exit 1
     fi
 
     # Create www directory
     mkdir -p "$sdms_www" || {
-        echo "$sdms_cmd failed to create required directories" >&2
+        echo "$sdms_cmd failed to create $sdms_www" >&2
         exit 1
     }
 
     # Register Let's Encrypt ACME account
     certbot register -m "$sdms_email" --agree-tos -n -q || certbot register -m "$sdms_email" --agree-tos -n -q --update-registration || {
-        echo "$sdms_cmd failed to register Let's Encrypt ACME account" >&2
+        echo "$sdms_cmd failed to register certbot account" >&2
         exit 1
     }
 }
