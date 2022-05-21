@@ -28,7 +28,7 @@ sdms_help() {
 
 # Declare password generation function
 sdms_pass() {
-    length=$1
+    local length=$1
     if [ -z "$length" ]; then
         length=16
     fi
@@ -37,15 +37,15 @@ sdms_pass() {
 
 # Declare deploy function
 sdms_deploy() {
-    # Assign parameters to variables
-    sdms_email="$1"
-    sdms_hostname="$2"
 
     # Update package list
     DEBIAN_FRONTEND=noninteractive apt-get -qy update || {
         echo "$sdms_cmd could not update package list" >&2
         exit 1
     }
+    # Declare variables
+    local sdms_email="$1"
+    local sdms_hostname="$2"
 
     # Distribution upgrade
     DEBIAN_FRONTEND=noninteractive apt-get -qy dist-upgrade || {
@@ -287,7 +287,7 @@ sdms_deploy() {
 
 # Declare new domain function
 sdms_new() {
-    sdms_domain="$1"
+    local sdms_domain="$1"
 
     # Get redirect domain
     if [ "${sdms_domain#www.}" != "${sdms_domain}" ]; then
@@ -475,7 +475,7 @@ sdms_new() {
 
 # Declare SSL domain function
 sdms_ssl() {
-    sdms_domain="$1"
+    local sdms_domain="$1"
 
     # Get redirect domain
     if [ "${sdms_domain#www.}" != "${sdms_domain}" ]; then
@@ -613,10 +613,10 @@ sdms_ssl() {
 
 # Declare delete domain function
 sdms_delete() {
-    sdms_domain="$1"
+    local sdms_domain="$1"
 
     # Create home variable
-    sdms_home="$sdms_www/$sdms_domain"
+    local sdms_home="$sdms_www/$sdms_domain"
 
     # Check domain is added to server
     if [ ! -d "$sdms_home" ]; then
@@ -628,7 +628,7 @@ sdms_delete() {
     rm -f "/etc/nginx/sites-enabled/$sdms_domain"
 
     # Create username variable
-    sdms_username="$(echo $sdms_domain | sed -e 's/\./_/g' | head -c 32)"
+    local sdms_username="$(echo $sdms_domain | sed -e 's/\./_/g' | head -c 32)"
 
     # Remove www-data from group
     deluser www-data "$sdms_username"
@@ -673,7 +673,7 @@ sdms_delete() {
 }
 
 sdms_backup() {
-    sdms_time_backup="$(date +'%Y-%m-%d_%H%M')"
+    local sdms_time_backup="$(date +'%Y-%m-%d_%H%M')"
 
     # Dump databases
     mysqldump --all-databases | gzip -c > "sdms-backup-$sdms_time_backup.sql.gz"
