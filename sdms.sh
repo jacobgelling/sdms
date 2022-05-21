@@ -14,16 +14,16 @@ sdms_help() {
 
 # Get PHP version function
 sdms_php() {
-    if [ -f "/etc/php/7.0/fpm/php.ini" ] && [ -f "/etc/php/7.0/cli/php.ini" ]; then
-        sdms_php="7.0"
-    elif [ -f "/etc/php/7.3/fpm/php.ini" ] && [ -f "/etc/php/7.3/cli/php.ini" ]; then
-        sdms_php="7.3"
+    if [ -f "/etc/php/8.1/fpm/php.ini" ] && [ -f "/etc/php/8.1/cli/php.ini" ]; then
+        sdms_php="8.1"
     elif [ -f "/etc/php/7.4/fpm/php.ini" ] && [ -f "/etc/php/7.4/cli/php.ini" ]; then
         sdms_php="7.4"
-    elif [ -f "/etc/php/8.1/fpm/php.ini" ] && [ -f "/etc/php/8.1/cli/php.ini" ]; then
-        sdms_php="8.1"
+    elif [ -f "/etc/php/7.3/fpm/php.ini" ] && [ -f "/etc/php/7.3/cli/php.ini" ]; then
+        sdms_php="7.3"
+    elif [ -f "/etc/php/7.0/fpm/php.ini" ] && [ -f "/etc/php/7.0/cli/php.ini" ]; then
+        sdms_php="7.0"
     else
-        echo "sdms could not find supported php installation" >&2
+        echo "sdms could not find supported php version" >&2
         exit 1
     fi
 }
@@ -43,26 +43,19 @@ sdms_deploy() {
     sdms_email="$1"
     sdms_hostname="$2"
 
-    # Update package list
+    # Update and install packages
     DEBIAN_FRONTEND=noninteractive apt-get -qy update || {
         echo "sdms could not update package list" >&2
         exit 1
     }
-
-    # Distribution upgrade
     DEBIAN_FRONTEND=noninteractive apt-get -qy dist-upgrade || {
         echo "sdms could not perform distribution upgrade" >&2
         exit 1
     }
-
-    # Install packages
     DEBIAN_FRONTEND=noninteractive apt-get -qy install ca-certificates certbot composer curl git libnginx-mod-http-headers-more-filter libnginx-mod-http-uploadprogress mariadb-client mariadb-server nftables nginx php-cli php-curl php-fpm php-gd php-json php-mbstring php-mysql php-xml php-zip unattended-upgrades unzip wget zip || {
         echo "sdms could not install packages" >&2
         exit 1
     }
-
-    # Get PHP version
-    sdms_php
 
     # Set hostname
     hostnamectl set-hostname "$sdms_hostname" || {
@@ -233,6 +226,7 @@ sdms_deploy() {
     } > /etc/nginx/snippets/php.conf
 
     # Configure PHP
+    sdms_php
     if [ -f "/etc/php/$sdms_php/cli/php.ini" ] && [ -f "/etc/php/$sdms_php/fpm/php.ini" ]; then
         # Hide version
         sed -i -e 's/expose_php = On/expose_php = Off/g' "/etc/php/$sdms_php/fpm/php.ini" "/etc/php/$sdms_php/cli/php.ini"
