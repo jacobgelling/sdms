@@ -108,8 +108,9 @@ sdms_deploy() {
             echo "# included during initial protocol handshake. The default is yes."
             echo "DebianBanner no"
         } >> "/etc/ssh/sshd_config"
-        systemctl restart ssh || {
-            echo "$sdms_cmd could not restart ssh" >&2
+
+        systemctl restart ssh.service || {
+            echo "$sdms_cmd could not restart ssh.service" >&2
             exit 1
         }
     fi
