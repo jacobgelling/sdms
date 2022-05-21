@@ -54,7 +54,7 @@ sdms_deploy() {
     }
 
     # Install packages
-    DEBIAN_FRONTEND=noninteractive apt-get -qy install apt-config-auto-update ca-certificates certbot composer curl git libnginx-mod-http-headers-more-filter libnginx-mod-http-uploadprogress mariadb-client mariadb-server needrestart nftables nginx nodejs npm php-cli php-curl php-fpm php-gd php-json php-mbstring php-mysql php-xml php-zip unattended-upgrades unzip wget zip || {
+    DEBIAN_FRONTEND=noninteractive apt-get -qy install nftables curl wget git zip unzip unattended-upgrades ca-certificates certbot mariadb-client mariadb-server nginx libnginx-mod-http-headers-more-filter libnginx-mod-http-uploadprogress composer php-cli php-fpm php-curl php-gd php-json php-mbstring php-mysql php-xml php-zip || {
         echo "$sdms_cmd could not install packages" >&2
         exit 1
     }
@@ -83,14 +83,6 @@ sdms_deploy() {
         echo "$sdms_cmd could not enable unattended upgrades" >&2
         exit 1
     }
-
-    # Enable needrestart automatic mode
-    if [ -f /etc/needrestart/needrestart.conf ]; then
-        sed -i -e "s/#\$nrconf{restart} = 'i';/\$nrconf{restart} = 'a';/g" /etc/needrestart/needrestart.conf
-    else
-        echo "$sdms_cmd could not find /etc/needrestart/needrestart.conf" >&2
-        exit 1
-    fi
 
     # Disable extra version suffix in SSH banner
     if [ -f /etc/ssh/sshd_config ] && ! grep -q "DebianBanner" /etc/ssh/sshd_config; then
