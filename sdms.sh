@@ -300,13 +300,13 @@ sdms_new() {
     sdms_home="$sdms_www/$sdms_domain"
 
     # Check domain is not already added to server
-    if [ -d "$sdms_home" -o -d "$sdms_www/$sdms_redirect_domain" ]; then
+    if [ -d "$sdms_home" ] || [ -d "$sdms_www/$sdms_redirect_domain" ]; then
         echo "$sdms_cmd found domain already exists" >&2
         exit 1
     fi
 
     # Create other variables
-    sdms_username="$(echo $sdms_domain | sed -e 's/\./_/g' | head -c 32)"
+    sdms_username="$(echo "$sdms_domain" | sed -e 's/\./_/g' | head -c 32)"
     sdms_db_pass="$(sdms_pass 32)"
 
     # Create user
