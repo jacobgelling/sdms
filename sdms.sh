@@ -60,10 +60,13 @@ sdms_deploy() {
     }
 
     # Update PHP version
+    sdms_php="7.0"
     if [ -f "/etc/php/7.3/fpm/php.ini" ] && [ -f "/etc/php/7.3/cli/php.ini" ]; then
         sdms_php="7.3"
     elif [ -f "/etc/php/7.4/fpm/php.ini" ] && [ -f "/etc/php/7.4/cli/php.ini" ]; then
         sdms_php="7.4"
+    elif [ -f "/etc/php/8.1/fpm/php.ini" ] && [ -f "/etc/php/8.1/cli/php.ini" ]; then
+        sdms_php="8.1"
     fi
 
     # Set hostname
