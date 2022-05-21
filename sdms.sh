@@ -3,7 +3,7 @@
 # Copyright (c) 2019 Jacob Gelling
 
 # Declare variables
-sdms_cmd="$(basename $0)"
+sdms_cmd="$(basename "$0")"
 sdms_www="/srv/www"
 
 # Get PHP version
@@ -211,7 +211,7 @@ sdms_deploy() {
 
     # Create NGINX SSL snippet
     {
-        if [ $(sed 's/\..*//' '/etc/debian_version') -ge 10 ]; then
+        if [ "$(sed 's/\..*//' '/etc/debian_version')" -ge 10 ]; then
             echo 'ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;'
         else
             echo 'ssl_protocols TLSv1 TLSv1.1 TLSv1.2;'
@@ -628,7 +628,7 @@ sdms_delete() {
     rm -f "/etc/nginx/sites-enabled/$sdms_domain"
 
     # Create username variable
-    sdms_username="$(echo $sdms_domain | sed -e 's/\./_/g' | head -c 32)"
+    sdms_username="$(echo "$sdms_domain" | sed -e 's/\./_/g' | head -c 32)"
 
     # Remove www-data from group
     deluser www-data "$sdms_username"
@@ -689,7 +689,7 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 # Ensure script is running on Debian 9 or later
-if [ ! -f '/etc/debian_version' ] || [ $(sed 's/\..*//' '/etc/debian_version') -lt 9 ]; then
+if [ ! -f '/etc/debian_version' ] || [ "$(sed 's/\..*//' '/etc/debian_version')" -lt 9 ]; then
     echo "$sdms_cmd must be run on Debian 9 or later" >&2
     exit 1
 fi
