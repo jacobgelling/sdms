@@ -2,6 +2,10 @@
 # MIT License
 # Copyright (c) 2019 Jacob Gelling
 
+# Exit when any command fails
+set -e
+trap 'echo "\"${BASH_COMMAND}\" failed with exit code $?."' EXIT
+
 # Help function
 sdms_help() {
     echo "sdms"
@@ -44,36 +48,18 @@ sdms_deploy() {
     sdms_hostname="$2"
 
     # Update and install packages
-    DEBIAN_FRONTEND=noninteractive apt-get -qy update || {
-        echo "sdms could not update package list" >&2
-        exit 1
-    }
-    DEBIAN_FRONTEND=noninteractive apt-get -qy dist-upgrade || {
-        echo "sdms could not perform distribution upgrade" >&2
-        exit 1
-    }
-    DEBIAN_FRONTEND=noninteractive apt-get -qy install ca-certificates certbot composer curl git libnginx-mod-http-headers-more-filter libnginx-mod-http-uploadprogress mariadb-client mariadb-server nftables nginx php-cli php-curl php-fpm php-gd php-json php-mbstring php-mysql php-xml php-zip unattended-upgrades unzip wget zip || {
-        echo "sdms could not install packages" >&2
-        exit 1
-    }
+    DEBIAN_FRONTEND=noninteractive apt-get -qy update
+    DEBIAN_FRONTEND=noninteractive apt-get -qy dist-upgrade
+    DEBIAN_FRONTEND=noninteractive apt-get -qy install ca-certificates certbot composer curl git libnginx-mod-http-headers-more-filter libnginx-mod-http-uploadprogress mariadb-client mariadb-server nftables nginx php-cli php-curl php-fpm php-gd php-json php-mbstring php-mysql php-xml php-zip unattended-upgrades unzip wget zip
 
     # Set hostname
-    hostnamectl set-hostname "$sdms_hostname" || {
-        echo "sdms could not set hostname" >&2
-        exit 1
-    }
+    hostnamectl set-hostname "$sdms_hostname"
 
     # Set timezone to UTC
-    timedatectl set-timezone UTC || {
-        echo "sdms could not set timezone" >&2
-        exit 1
-    }
+    timedatectl set-timezone UTC
 
     # Enable unattended upgrades
-    DEBIAN_FRONTEND=noninteractive dpkg-reconfigure -plow unattended-upgrades || {
-        echo "sdms could not enable unattended-upgrades" >&2
-        exit 1
-    }
+    DEBIAN_FRONTEND=noninteractive dpkg-reconfigure -plow unattended-upgrades
 
     # Configure git
     git config --global pull.rebase false
@@ -87,10 +73,7 @@ sdms_deploy() {
             echo "DebianBanner no"
         } >> "/etc/ssh/sshd_config"
 
-        systemctl restart ssh.service || {
-            echo "sdms could not restart ssh.service" >&2
-            exit 1
-        }
+        systemctl restart ssh.service
     fi
 
     # Configure nftables
@@ -120,14 +103,8 @@ sdms_deploy() {
         echo '\t}'
         echo '}'
     } > /etc/nftables.conf
-    nft -f /etc/nftables.conf || {
-        echo "sdms failed to load nftables config" >&2
-        exit 1
-    }
-    systemctl enable nftables.service || {
-        echo "sdms failed to enable nftables.service" >&2
-        exit 1
-    }
+    nft -f /etc/nftables.conf
+    systemctl enable nftables.service
 
     # Secure MariaDB server
     mariadb -e "DELETE FROM mysql.user WHERE User='';"
@@ -139,10 +116,7 @@ sdms_deploy() {
     # Generate Diffie–Hellman parameters
     touch /etc/nginx/dhparams.pem
     chmod o-r,o-w /etc/nginx/dhparams.pem
-    openssl dhparam -out /etc/nginx/dhparams.pem 2048 || {
-        echo "sdms could not generate Diffie–Hellman parameters" >&2
-        exit 1
-    }
+    openssl dhparam -out /etc/nginx/dhparams.pem 2048
 
     # Hide NGINX version
     if [ -f /etc/nginx/nginx.conf ]; then
@@ -169,10 +143,7 @@ sdms_deploy() {
         # Enable gzip for all applicable files
         sed -i -e 's/# gzip_types/gzip_types application\/vnd.ms-fontobject image\/svg+xml image\/x-icon text\/x-component/g' /etc/nginx/nginx.conf
 
-        systemctl reload nginx.service || {
-            echo "sdms failed to reload nginx.service" >&2
-            exit 1
-        }
+        systemctl reload nginx.service
     else
         echo "sdms could not find /etc/nginx/nginx.conf" >&2
         exit 1
@@ -242,26 +213,17 @@ sdms_deploy() {
         sed -i -e 's/session.use_strict_mode = 0/session.use_strict_mode = 1/g' "/etc/php/$sdms_php/fpm/php.ini" "/etc/php/$sdms_php/cli/php.ini"
 
         # Restart PHP-FPM
-        systemctl restart "php$sdms_php-fpm.service" || {
-            echo "sdms failed to restart php$sdms_php-fpm.service" >&2
-            exit 1
-        }
+        systemctl restart "php$sdms_php-fpm.service"
     else
         echo "sdms could not find /etc/php/$sdms_php/cli/php.ini and /etc/php/$sdms_php/fpm/php.ini" >&2
         exit 1
     fi
 
     # Create www directory
-    mkdir -p "/srv/www" || {
-        echo "sdms failed to create /srv/www" >&2
-        exit 1
-    }
+    mkdir -p "/srv/www"
 
     # Register Let's Encrypt ACME account
-    certbot register -m "$sdms_email" --agree-tos -n -q || certbot register -m "$sdms_email" --agree-tos -n -q --update-registration || {
-        echo "sdms failed to register certbot account" >&2
-        exit 1
-    }
+    certbot register -m "$sdms_email" --agree-tos -n -q || certbot register -m "$sdms_email" --agree-tos -n -q --update-registration
 }
 
 # New domain function
@@ -290,36 +252,18 @@ sdms_new() {
     sdms_db_pass="$(sdms_pass 32)"
 
     # Create user
-    adduser --system --home "$sdms_home" --group --gecos "" "$sdms_username" || {
-        echo "sdms failed to create user" >&2
-        exit 1
-    }
+    adduser --system --home "$sdms_home" --group --gecos "" "$sdms_username"
 
     # Add www-data to group
-    adduser www-data "$sdms_username" || {
-        echo "sdms failed to add www-data to group" >&2
-        exit 1
-    }
+    adduser www-data "$sdms_username"
 
     # Create required directories
-    sudo -u "$sdms_username" mkdir "$sdms_home/sessions" "$sdms_home/tmp" "$sdms_home/root" "$sdms_home/root/public" "$sdms_home/.well-known" "$sdms_home/.ssh" || {
-        echo "sdms failed to create required directories" >&2
-        exit 1
-    }
-    chmod -R o-r,o-w,o-x "$sdms_home" || {
-        echo "sdms failed to set permissions on directories" >&2
-        exit 1
-    }
+    sudo -u "$sdms_username" mkdir "$sdms_home/sessions" "$sdms_home/tmp" "$sdms_home/root" "$sdms_home/root/public" "$sdms_home/.well-known" "$sdms_home/.ssh"
+    chmod -R o-r,o-w,o-x "$sdms_home"
 
     # Create MariaDB database and user
-    mariadb -e "CREATE DATABASE \`$sdms_username\`;" || {
-        echo "sdms failed to create database" >&2
-        exit 1
-    }
-    mariadb -e "GRANT ALL ON \`$sdms_username\`.* TO '$sdms_username'@'localhost' IDENTIFIED BY '$sdms_db_pass';" || {
-        echo "sdms failed to create database user" >&2
-        exit 1
-    }
+    mariadb -e "CREATE DATABASE \`$sdms_username\`;"
+    mariadb -e "GRANT ALL ON \`$sdms_username\`.* TO '$sdms_username'@'localhost' IDENTIFIED BY '$sdms_db_pass';"
     mariadb -e "FLUSH PRIVILEGES;"
     sudo -u "$sdms_username" touch "$sdms_home/.my.cnf"
     chmod o-r,o-w "$sdms_home/.my.cnf"
@@ -363,10 +307,7 @@ sdms_new() {
     fi
 
     # Restart PHP-FPM
-    systemctl restart "php$sdms_php-fpm.service" || {
-        echo "sdms failed to restart php$sdms_php-fpm.service" >&2
-        exit 1
-    }
+    systemctl restart "php$sdms_php-fpm.service"
 
     # Create NGINX config
     {
@@ -441,16 +382,10 @@ sdms_new() {
     } > "/etc/nginx/sites-available/$sdms_domain"
 
     # Enable NGINX config
-    ln -s "/etc/nginx/sites-available/$sdms_domain" "/etc/nginx/sites-enabled/$sdms_domain" || {
-        echo "sdms failed to enable NGINX config" >&2
-        exit 1
-    }
+    ln -s "/etc/nginx/sites-available/$sdms_domain" "/etc/nginx/sites-enabled/$sdms_domain"
 
     # Restart NGINX
-    systemctl restart nginx.service || {
-        echo "sdms failed to restart nginx.service" >&2
-        exit 1
-    }
+    systemctl restart nginx.service
 
     # Configure git
     sudo -u "$sdms_username" git config --global pull.rebase false
@@ -477,10 +412,7 @@ sdms_ssl() {
     fi
 
     # Generate SSL certificate
-    certbot certonly --webroot -n -q --renew-hook "systemctl reload nginx.service" -w "$sdms_home" -d "$sdms_domain" -d "$sdms_redirect_domain" || {
-        echo "sdms failed to generate SSL certificate" >&2
-        exit 1
-    }
+    certbot certonly --webroot -n -q --renew-hook "systemctl reload nginx.service" -w "$sdms_home" -d "$sdms_domain" -d "$sdms_redirect_domain"
 
     # Generate NGINX config
     {
@@ -588,10 +520,7 @@ sdms_ssl() {
     } > "/etc/nginx/sites-available/$sdms_domain"
 
     # Reload NGINX
-    systemctl reload nginx.service || {
-        echo "sdms failed to reload nginx.service" >&2
-        exit 1
-    }
+    systemctl reload nginx.service
 }
 
 # Delete domain function
@@ -618,42 +547,27 @@ sdms_delete() {
     deluser www-data "$sdms_username"
 
     # Restart NGINX
-    systemctl restart nginx.service || {
-        echo "sdms failed to restart nginx.service" >&2
-        exit 1
-    }
+    systemctl restart nginx.service
 
     # Delete PHP pool
     rm -f "/etc/php/$sdms_php/fpm/pool.d/$sdms_domain.conf"
 
     # Restart PHP-FPM
-    systemctl restart "php$sdms_php-fpm.service" || {
-        echo "sdms failed to restart php$sdms_php-fpm.service" >&2
-        exit 1
-    }
+    systemctl restart "php$sdms_php-fpm.service"
 
     # Delete NGINX config
     rm -f "/etc/nginx/sites-available/$sdms_domain"
 
-    # Delete SSL certificate
-    certbot delete -n -q --cert-name "$sdms_domain"
-
     # Delete MariaDB database and user
-    mariadb -e "DROP DATABASE IF EXISTS \`$sdms_username\`;" || {
-        echo "sdms failed to delete database" >&2
-        exit 1
-    }
-    mariadb -e "DROP USER IF EXISTS '$sdms_username'@'localhost';" || {
-        echo "sdms failed to delete database user" >&2
-        exit 1
-    }
+    mariadb -e "DROP DATABASE IF EXISTS \`$sdms_username\`;"
+    mariadb -e "DROP USER IF EXISTS '$sdms_username'@'localhost';"
     mariadb -e "FLUSH PRIVILEGES;"
 
     # Delete user
-    userdel -r "$sdms_username" || {
-        echo "sdms failed to delete user" >&2
-        exit 1
-    }
+    userdel -r "$sdms_username"
+
+    # Delete SSL certificate
+    certbot delete -n -q --cert-name "$sdms_domain"
 }
 
 # Backup server function
