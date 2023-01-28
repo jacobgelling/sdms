@@ -18,18 +18,11 @@ sdms_help() {
 
 # Get PHP version function
 sdms_php() {
-    if [ -f "/etc/php/8.2/fpm/php.ini" ] && [ -f "/etc/php/8.2/cli/php.ini" ]; then
-        sdms_php="8.2"
-    elif [ -f "/etc/php/8.1/fpm/php.ini" ] && [ -f "/etc/php/8.1/cli/php.ini" ]; then
-        sdms_php="8.1"
-    elif [ -f "/etc/php/7.4/fpm/php.ini" ] && [ -f "/etc/php/7.4/cli/php.ini" ]; then
-        sdms_php="7.4"
-    elif [ -f "/etc/php/7.3/fpm/php.ini" ] && [ -f "/etc/php/7.3/cli/php.ini" ]; then
-        sdms_php="7.3"
-    elif [ -f "/etc/php/7.0/fpm/php.ini" ] && [ -f "/etc/php/7.0/cli/php.ini" ]; then
-        sdms_php="7.0"
-    else
-        echo "sdms could not find supported php version" >&2
+    if [ -d "/etc/php" ]; then
+        sdms_php="$(ls /etc/php | sort -nr | head -n1)"
+    fi
+    if [ ! -f "/etc/php/$sdms_php/fpm/php.ini" ] || [ ! -f "/etc/php/$sdms_php/cli/php.ini" ]; then
+        echo "sdms could not find php" >&2
         exit 1
     fi
 }
