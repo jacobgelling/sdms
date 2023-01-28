@@ -18,9 +18,12 @@ sdms_help() {
 
 # Get PHP version function
 sdms_php() {
+    # Get latest PHP folder
     if [ -d "/etc/php" ]; then
         sdms_php="$(ls /etc/php | sort -nr | head -n1)"
     fi
+
+    # Check php.ini files exist
     if [ ! -f "/etc/php/$sdms_php/fpm/php.ini" ] || [ ! -f "/etc/php/$sdms_php/cli/php.ini" ]; then
         echo "sdms could not find php" >&2
         exit 1
