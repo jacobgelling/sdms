@@ -18,7 +18,9 @@ sdms_help() {
 
 # Get PHP version function
 sdms_php() {
-    if [ -f "/etc/php/8.1/fpm/php.ini" ] && [ -f "/etc/php/8.1/cli/php.ini" ]; then
+    if [ -f "/etc/php/8.2/fpm/php.ini" ] && [ -f "/etc/php/8.2/cli/php.ini" ]; then
+        sdms_php="8.2"
+    elif [ -f "/etc/php/8.1/fpm/php.ini" ] && [ -f "/etc/php/8.1/cli/php.ini" ]; then
         sdms_php="8.1"
     elif [ -f "/etc/php/7.4/fpm/php.ini" ] && [ -f "/etc/php/7.4/cli/php.ini" ]; then
         sdms_php="7.4"
