@@ -4,7 +4,7 @@
 
 # Exit when any command fails
 set -e
-trap '[[ $? != 0 ]] && echo "\"${BASH_COMMAND}\" failed with exit code $?."' EXIT
+trap '[ $? -eq 0 ] && exit 0 || echo "sdms failed with exit status $?"' EXIT
 
 # Help function
 sdms_help() {
@@ -635,7 +635,7 @@ while test -n "$1"; do
         sdms_backup
         break
         ;;
-        -h|--help)
+        ""|-h|--help)
         sdms_help
         break
         ;;
