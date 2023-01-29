@@ -116,8 +116,9 @@ sdms_deploy() {
     chmod o-r,o-w /etc/nginx/dhparams.pem
     openssl dhparam -out /etc/nginx/dhparams.pem 2048
 
-    # Hide NGINX version
+    # Configure NGINX
     if [ -f /etc/nginx/nginx.conf ]; then
+        # Hide NGINX version
         sed -i -e 's/# server_tokens off;/server_tokens off;\n\tmore_clear_headers Server;/g' /etc/nginx/nginx.conf
 
         # Enable gzip
