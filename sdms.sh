@@ -221,7 +221,7 @@ sdms_deploy() {
     mkdir -p "/srv/www"
 
     # Register Let's Encrypt ACME account
-    certbot register -m "$sdms_email" --agree-tos -n -q || certbot register -m "$sdms_email" --agree-tos -n -q --update-registration
+    certbot register -m "$sdms_email" --agree-tos --no-eff-email -n -q || certbot update_account -m "$sdms_email" --agree-tos --no-eff-email -n -q
 }
 
 # New domain function
