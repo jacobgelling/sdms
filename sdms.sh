@@ -4,7 +4,7 @@
 
 # Exit when any command fails
 set -e
-trap 'echo "\"${BASH_COMMAND}\" failed with exit code $?."' EXIT
+trap '[[ $? != 0 ]] && echo "\"${BASH_COMMAND}\" failed with exit code $?."' EXIT
 
 # Help function
 sdms_help() {
@@ -637,7 +637,7 @@ while test -n "$1"; do
         ;;
         -h|--help)
         sdms_help
-        exit 0
+        break
         ;;
         *)
         sdms_help

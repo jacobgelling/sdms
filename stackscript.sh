@@ -20,7 +20,11 @@ git clone https://github.com/jacobgelling/sdms.git /root/sdms
 chmod +x /root/sdms/sdms.sh
 
 # Symlink executable in bin
+mkdir /root/bin
 ln -s /root/sdms/sdms.sh /root/bin/sdms
 
 # Deploy server
 /root/sdms/sdms.sh --deploy "$EMAIL" "$HOSTNAME"
+
+# Delete stackscript
+rm /root/StackScript
