@@ -20,7 +20,7 @@ git clone https://github.com/jacobgelling/sdms.git /opt/sdms
 chmod +x /opt/sdms/sdms.sh /opt/sdms/stackscript.sh
 
 # Symlink executable inside /usr/local/sbin
-ln -s /root/sdms/sdms.sh /usr/local/sbin/sdms
+ln -s /opt/sdms/sdms.sh /usr/local/sbin/sdms
 
 # Deploy server
 /opt/sdms/sdms.sh --deploy "$EMAIL" "$HOSTNAME"
