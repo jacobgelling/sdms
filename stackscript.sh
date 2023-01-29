@@ -14,17 +14,16 @@ DEBIAN_FRONTEND=noninteractive apt-get -qy dist-upgrade
 DEBIAN_FRONTEND=noninteractive apt-get -qy install git
 
 # Download SDMS
-git clone https://github.com/jacobgelling/sdms.git /root/sdms
+git clone https://github.com/jacobgelling/sdms.git /opt/sdms
 
 # Add executable permission
-chmod +x /root/sdms/sdms.sh
+chmod +x /opt/sdms/sdms.sh /opt/sdms/stackscript.sh
 
-# Symlink executable in bin
-mkdir /root/bin
-ln -s /root/sdms/sdms.sh /root/bin/sdms
+# Symlink executable inside /usr/local/sbin
+ln -s /root/sdms/sdms.sh /usr/local/sbin/sdms
 
 # Deploy server
-/root/sdms/sdms.sh --deploy "$EMAIL" "$HOSTNAME"
+/opt/sdms/sdms.sh --deploy "$EMAIL" "$HOSTNAME"
 
 # Delete stackscript
 rm /root/StackScript
