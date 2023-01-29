@@ -595,7 +595,7 @@ fi
 # Parse CLI parameters and call respective functions
 if [ -z "$1" ]; then
     sdms_help
-    exit 1
+    exit 0
 fi
 while test -n "$1"; do
     case "$1" in
@@ -635,7 +635,7 @@ while test -n "$1"; do
         sdms_backup
         break
         ;;
-        ""|-h|--help)
+        -h|--help)
         sdms_help
         break
         ;;
