@@ -3,15 +3,15 @@
 # Copyright (c) 2019 Jacob Gelling
 
 # Declare variables
-# <UDF name="email" />
-# <UDF name="hostname" />
+# <UDF name="email" label="Email" />
+# <UDF name="hostname" label="Hostname" />
 
 # Update packages
-apt-get -y update
-apt-get -y dist-upgrade
+DEBIAN_FRONTEND=noninteractive apt-get -qy update
+DEBIAN_FRONTEND=noninteractive apt-get -qy dist-upgrade
 
 # Install git
-apt-get -y install git
+DEBIAN_FRONTEND=noninteractive apt-get -qy install git
 
 # Download SDMS
 git clone https://github.com/jacobgelling/sdms.git /root/sdms
@@ -19,7 +19,7 @@ git clone https://github.com/jacobgelling/sdms.git /root/sdms
 # Add executable permission
 chmod +x /root/sdms/sdms.sh
 
-# Symlink to executable
+# Symlink executable in bin
 ln -s /root/sdms/sdms.sh /root/bin/sdms
 
 # Deploy server
