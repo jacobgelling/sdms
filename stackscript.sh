@@ -17,7 +17,7 @@ DEBIAN_FRONTEND=noninteractive apt-get -qy install git
 git clone https://github.com/jacobgelling/sdms.git /opt/sdms
 
 # Add executable permission
-chmod +x /opt/sdms/sdms.sh /opt/sdms/stackscript.sh /opt/sdms/defaultssl.sh
+chmod +x /opt/sdms/automaticreboot.sh /opt/sdms/defaultssl.sh /opt/sdms/sdms.sh /opt/sdms/stackscript.sh
 
 # Symlink executable inside /usr/local/sbin
 ln -s /opt/sdms/sdms.sh /usr/local/sbin/sdms
