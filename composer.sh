@@ -34,10 +34,10 @@ if [ "$EXPECTED_SIGNATURE" != "$ACTUAL_SIGNATURE *composer-setup.php" ]; then
     exit 1
 fi
 
-# If PHP is version 7.2.5 or newer install Composer stable, otherwise install Composer 2.2.x
+# If PHP is version 7.2.5 or newer install Composer 2.x, otherwise install Composer 2.2.x
 if [ "$(printf '%s\n' "7.2.5" "$sdms_php" | sort -V | head -n1)" = "7.2.5" ]; then
     # Install Composer stable
-    php composer-setup.php --install-dir=/usr/local/bin --filename=composer --stable
+    php composer-setup.php --install-dir=/usr/local/bin --filename=composer --2
 else
     # Install Composer 2.2.x
     php composer-setup.php --install-dir=/usr/local/bin --filename=composer --2.2
