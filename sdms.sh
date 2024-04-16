@@ -241,7 +241,7 @@ sdms_new() {
     sdms_home="/srv/www/$sdms_domain"
 
     # Check domain is not already added to server
-    if [ -d "$sdms_home" ] || {[ ! -z "${sdms_redirect_domain}" ] && [ -d "/srv/www/$sdms_redirect_domain" ];}; then
+    if [ -d "$sdms_home" ] || [ ! -z "${sdms_redirect_domain}" ] && [ -d "/srv/www/$sdms_redirect_domain" ]; then
         echo "sdms found domain already exists" >&2
         exit 1
     fi
