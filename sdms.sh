@@ -234,14 +234,14 @@ sdms_new() {
     if [ "${sdms_domain#www.}" != "${sdms_domain}" ]; then
         sdms_redirect_domain="${sdms_domain#www.}"
     else
-        sdms_redirect_domain="www.$sdms_domain"
+        sdms_redirect_domain=""
     fi
 
     # Create home variable
     sdms_home="/srv/www/$sdms_domain"
 
     # Check domain is not already added to server
-    if [ -d "$sdms_home" ] || [ -d "/srv/www/$sdms_redirect_domain" ]; then
+    if [ -d "$sdms_home" ] || {[ ! -z "${sdms_redirect_domain}" ] && [ -d "/srv/www/$sdms_redirect_domain" ];}; then
         echo "sdms found domain already exists" >&2
         exit 1
     fi
@@ -310,23 +310,25 @@ sdms_new() {
 
     # Create NGINX config
     {
-        echo "# Redirect $sdms_redirect_domain to $sdms_domain"
-        echo "server {"
-        echo "\tlisten 80;"
-        echo "\tlisten [::]:80;"
-        echo "\tserver_name $sdms_redirect_domain;"
-        echo ""
-        echo "\t# Allow ACME challenge validation by Let's Encrypt"
-        echo "\tlocation ^~ /.well-known/acme-challenge/ {"
-        echo "\t\troot $sdms_home;"
-        echo "\t\tdefault_type text/plain;"
-        echo "\t}"
-        echo ""
-        echo "\tlocation / {"
-        echo "\t\treturn 301 http://$sdms_domain\$request_uri;"
-        echo "\t}"
-        echo "}"
-        echo ""
+        if [ ! -z "${sdms_redirect_domain}" ]; then
+            echo "# Redirect $sdms_redirect_domain to $sdms_domain"
+            echo "server {"
+            echo "\tlisten 80;"
+            echo "\tlisten [::]:80;"
+            echo "\tserver_name $sdms_redirect_domain;"
+            echo ""
+            echo "\t# Allow ACME challenge validation by Let's Encrypt"
+            echo "\tlocation ^~ /.well-known/acme-challenge/ {"
+            echo "\t\troot $sdms_home;"
+            echo "\t\tdefault_type text/plain;"
+            echo "\t}"
+            echo ""
+            echo "\tlocation / {"
+            echo "\t\treturn 301 http://$sdms_domain\$request_uri;"
+            echo "\t}"
+            echo "}"
+            echo ""
+        fi
         echo "# Serve website"
         echo "server {"
         echo "\tlisten 80;"
@@ -398,7 +400,7 @@ sdms_ssl() {
     if [ "${sdms_domain#www.}" != "${sdms_domain}" ]; then
         sdms_redirect_domain="${sdms_domain#www.}"
     else
-        sdms_redirect_domain="www.$sdms_domain"
+        sdms_redirect_domain=""
     fi
 
     # Create home variable
@@ -411,7 +413,11 @@ sdms_ssl() {
     fi
 
     # Generate SSL certificate
-    certbot certonly --webroot -n -q --renew-hook "systemctl reload nginx.service" -w "$sdms_home" -d "$sdms_domain" -d "$sdms_redirect_domain"
+    if [ ! -z "${sdms_redirect_domain}" ]; then
+        certbot certonly --webroot -n -q --renew-hook "systemctl reload nginx.service" -w "$sdms_home" -d "$sdms_domain" -d "$sdms_redirect_domain"
+    else
+        certbot certonly --webroot -n -q --renew-hook "systemctl reload nginx.service" -w "$sdms_home" -d "$sdms_domain"
+    fi
 
     # Generate NGINX config
     {
@@ -419,7 +425,11 @@ sdms_ssl() {
         echo "server {"
         echo "\tlisten 80;"
         echo "\tlisten [::]:80;"
-        echo "\tserver_name $sdms_redirect_domain $sdms_domain;"
+        if [ ! -z "${sdms_redirect_domain}" ]; then
+            echo "\tserver_name $sdms_redirect_domain $sdms_domain;"
+        else
+            echo "\tserver_name $sdms_domain;"
+        fi
         echo ""
         echo "\t# Allow ACME challenge validation by Let's Encrypt"
         echo "\tlocation ^~ /.well-known/acme-challenge/ {"
@@ -432,26 +442,28 @@ sdms_ssl() {
         echo "\t}"
         echo "}"
         echo ""
-        echo "# Redirect $sdms_redirect_domain to $sdms_domain"
-        echo "server {"
-        echo "\tlisten 443 ssl http2;"
-        echo "\tlisten [::]:443 ssl http2;"
-        echo "\tserver_name $sdms_redirect_domain;"
-        echo ""
-        echo "\tssl_certificate /etc/letsencrypt/live/$sdms_domain/fullchain.pem;"
-        echo "\tssl_trusted_certificate /etc/letsencrypt/live/$sdms_domain/chain.pem;"
-        echo "\tssl_certificate_key /etc/letsencrypt/live/$sdms_domain/privkey.pem;"
-        echo "\t# add_header Strict-Transport-Security max-age=31536000 always;"
-        echo "\t# add_header Strict-Transport-Security \"max-age=31536000; includeSubDomains\" always;"
-        echo "\t# add_header Strict-Transport-Security \"max-age=31536000; includeSubDomains; preload\" always;"
-        echo "\tinclude snippets/ssl.conf;"
-        echo ""
-        echo "\t# Allow ACME challenge validation by Let's Encrypt"
-        echo "\tlocation ^~ /.well-known/acme-challenge/ {"
-        echo "\t\troot $sdms_home;"
-        echo "\t\tdefault_type text/plain;"
-        echo "\t}"
-        echo ""
+        if [ ! -z "${sdms_redirect_domain}" ]; then
+            echo "# Redirect $sdms_redirect_domain to $sdms_domain"
+            echo "server {"
+            echo "\tlisten 443 ssl http2;"
+            echo "\tlisten [::]:443 ssl http2;"
+            echo "\tserver_name $sdms_redirect_domain;"
+            echo ""
+            echo "\tssl_certificate /etc/letsencrypt/live/$sdms_domain/fullchain.pem;"
+            echo "\tssl_trusted_certificate /etc/letsencrypt/live/$sdms_domain/chain.pem;"
+            echo "\tssl_certificate_key /etc/letsencrypt/live/$sdms_domain/privkey.pem;"
+            echo "\t# add_header Strict-Transport-Security max-age=31536000 always;"
+            echo "\t# add_header Strict-Transport-Security \"max-age=31536000; includeSubDomains\" always;"
+            echo "\t# add_header Strict-Transport-Security \"max-age=31536000; includeSubDomains; preload\" always;"
+            echo "\tinclude snippets/ssl.conf;"
+            echo ""
+            echo "\t# Allow ACME challenge validation by Let's Encrypt"
+            echo "\tlocation ^~ /.well-known/acme-challenge/ {"
+            echo "\t\troot $sdms_home;"
+            echo "\t\tdefault_type text/plain;"
+            echo "\t}"
+            echo ""
+        fi
         echo "\tlocation / {"
         echo "\t\treturn 301 https://$sdms_domain\$request_uri;"
         echo "\t}"
