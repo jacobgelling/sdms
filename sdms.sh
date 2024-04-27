@@ -218,6 +218,14 @@ sdms_deploy() {
         exit 1
     fi
 
+    # Opt-out of Microsoft telemetry
+    if [ -f /etc/environment ] && ! grep -q "DOTNET_CLI_TELEMETRY_OPTOUT" /etc/environment; then
+        echo "DOTNET_CLI_TELEMETRY_OPTOUT=1" >> /etc/environment
+    fi
+    if [ -f /etc/environment ] && ! grep -q "POWERSHELL_TELEMETRY_OPTOUT" /etc/environment; then
+        echo "POWERSHELL_TELEMETRY_OPTOUT=1" >> /etc/environment
+    fi
+
     # Create www directory
     mkdir -p "/srv/www"
 
