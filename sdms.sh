@@ -478,11 +478,6 @@ sdms_ssl() {
             echo "\t}"
             echo ""
         fi
-        echo "\tlocation / {"
-        echo "\t\treturn 301 https://$sdms_domain\$request_uri;"
-        echo "\t}"
-        echo "}"
-        echo ""
         echo "# Serve website"
         echo "server {"
         echo "\tlisten 443 ssl http2;"
