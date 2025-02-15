@@ -476,7 +476,7 @@ sdms_ssl() {
             echo "\t\troot $sdms_home;"
             echo "\t\tdefault_type text/plain;"
             echo "\t}"
-            echo "\t}"
+            echo "}"
             echo ""
         fi
         echo "# Serve website"
