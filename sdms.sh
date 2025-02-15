@@ -37,7 +37,7 @@ sdms_pass() {
         sdms_length=16
     fi
 
-    tr -dc 'a-zA-Z0-9-_!@#$%^&*\()_+{}|:<>?=' < /dev/urandom | head -c "${sdms_length}" | xargs
+    tr -dc 'a-zA-Z0-9-_!@%^&*()_+{}|:<>?=' < /dev/urandom | head -c "${sdms_length}" | xargs
 }
 
 # Deploy function
