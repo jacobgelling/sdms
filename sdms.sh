@@ -476,6 +476,10 @@ sdms_ssl() {
             echo "\t\troot $sdms_home;"
             echo "\t\tdefault_type text/plain;"
             echo "\t}"
+            echo ""
+            echo "\tlocation / {"
+            echo "\t\treturn 301 https://$sdms_domain\$request_uri;"
+            echo "\t}"
             echo "}"
             echo ""
         fi
