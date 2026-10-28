@@ -12,7 +12,6 @@ SDMS is made available under the MIT licence.
 * Server hardening
   * nftables firewall
   * Unattended upgrades
-  * Diffie-Hellman parameters generation
   * Banner removal
 * NGINX and PHP-FPM virtual host management
   * Add domain
