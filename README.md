@@ -1,9 +1,9 @@
 # SDMS
-A simple LEMP (Linux, NGINX, MariaDB, PHP) server deployment and management script supporting Debian 9 and later. It is tested as working on Debian 9 (Stretch), 10 (Buster), 11 (Bullseye), 12 (Bookworm), and 13 (Trixie). Intended for virtual hosting environments, this script enables the automated creation and removal of domains in the LEMP stack.
+A simple LEMP (Linux, NGINX, MariaDB, PHP) server deployment and management script supporting Debian 12 and later. It is tested as working on Debian 12 (Bookworm) and 13 (Trixie). Intended for virtual hosting environments, this script enables the automated creation and removal of domains in the LEMP stack.
 
 By default there are no deb repository or compilation requirements, solely using packages provided and maintained by Debian for ease of upgrade and security. Some associated scripts are provided (generally for edge cases or newer software versions).
 
-When upgrading from one Debian release to the next, the script remains compatible and the server should continue running smoothly subject to you manually moving PHP pool config files to the new location (for example for Debian 11 to 12, PHP pools need moving from `/etc/php/7.4/pool.d/` to `/etc/php/8.2/pool.d/`).
+When upgrading from one Debian release to the next, the script remains compatible and the server should continue running smoothly subject to you manually moving PHP pool config files to the new location (for example for Debian 12 to 13, PHP pools need moving from `/etc/php/8.2/fpm/pool.d/` to `/etc/php/8.4/fpm/pool.d/`).
 
 SDMS is made available under the MIT licence.
 

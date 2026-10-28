@@ -48,7 +48,7 @@ sdms_deploy() {
     # Update and install packages
     DEBIAN_FRONTEND=noninteractive apt-get -qy update
     DEBIAN_FRONTEND=noninteractive apt-get -qy dist-upgrade
-    DEBIAN_FRONTEND=noninteractive apt-get -qy install ca-certificates certbot composer curl git libnginx-mod-http-headers-more-filter libnginx-mod-http-uploadprogress mariadb-client mariadb-server nftables nginx php-cli php-curl php-fpm php-gd php-json php-mbstring php-mysql php-xml php-zip sudo unattended-upgrades unzip wget zip
+    DEBIAN_FRONTEND=noninteractive apt-get -qy install ca-certificates certbot composer curl git libnginx-mod-http-headers-more-filter libnginx-mod-http-uploadprogress mariadb-client mariadb-server nftables nginx php-cli php-curl php-fpm php-gd php-mbstring php-mysql php-xml php-zip sudo unattended-upgrades unzip wget zip
 
     # Set hostname
     hostnamectl set-hostname "$sdms_hostname"
@@ -154,11 +154,7 @@ sdms_deploy() {
 
     # Create NGINX SSL snippet
     {
-        if [ "$(sed 's/\..*//' '/etc/debian_version')" -ge 10 ]; then
-            echo 'ssl_protocols TLSv1.2 TLSv1.3;'
-        else
-            echo 'ssl_protocols TLSv1.2;'
-        fi
+        echo 'ssl_protocols TLSv1.2 TLSv1.3;'
         echo 'ssl_ciphers HIGH:!aNULL:!MD5:!kDHE;'
         echo 'ssl_prefer_server_ciphers on;'
         echo ''
@@ -606,9 +602,9 @@ if [ "$(id -u)" != "0" ]; then
     exit 1
 fi
 
-# Ensure script is running on Debian 9 or later
-if [ ! -f '/etc/debian_version' ] || [ "$(sed 's/\..*//' '/etc/debian_version')" -lt 9 ]; then
-    echo "sdms must be run on Debian 9 or later" >&2
+# Ensure script is running on Debian 12 or later
+if [ ! -f '/etc/debian_version' ] || [ "$(sed 's/\..*//' '/etc/debian_version')" -lt 12 ]; then
+    echo "sdms must be run on Debian 12 or later" >&2
     exit 1
 fi
 
