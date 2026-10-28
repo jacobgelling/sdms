@@ -48,7 +48,7 @@ sdms_deploy() {
     # Update and install packages
     DEBIAN_FRONTEND=noninteractive apt-get -qy update
     DEBIAN_FRONTEND=noninteractive apt-get -qy dist-upgrade
-    DEBIAN_FRONTEND=noninteractive apt-get -qy install ca-certificates certbot composer curl git libnginx-mod-http-headers-more-filter libnginx-mod-http-uploadprogress mariadb-client mariadb-server nftables nginx php-cli php-curl php-fpm php-gd php-json php-mbstring php-mysql php-xml php-zip unattended-upgrades unzip wget zip
+    DEBIAN_FRONTEND=noninteractive apt-get -qy install ca-certificates certbot composer curl git libnginx-mod-http-headers-more-filter libnginx-mod-http-uploadprogress mariadb-client mariadb-server nftables nginx php-cli php-curl php-fpm php-gd php-json php-mbstring php-mysql php-xml php-zip sudo unattended-upgrades unzip wget zip
 
     # Set hostname
     hostnamectl set-hostname "$sdms_hostname"
