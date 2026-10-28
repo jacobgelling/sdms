@@ -111,11 +111,6 @@ sdms_deploy() {
     mariadb -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
     mariadb -e "FLUSH PRIVILEGES;"
 
-    # Generate Diffie–Hellman parameters
-    touch /etc/nginx/dhparams.pem
-    chmod o-r,o-w /etc/nginx/dhparams.pem
-    openssl dhparam -out /etc/nginx/dhparams.pem 2048
-
     # Configure NGINX
     if [ -f /etc/nginx/nginx.conf ]; then
         # Hide NGINX version
@@ -164,13 +159,11 @@ sdms_deploy() {
         else
             echo 'ssl_protocols TLSv1.2;'
         fi
-        echo 'ssl_ciphers HIGH:!aNULL:!MD5;'
+        echo 'ssl_ciphers HIGH:!aNULL:!MD5:!kDHE;'
         echo 'ssl_prefer_server_ciphers on;'
         echo ''
         echo 'ssl_session_cache shared:SSL:10m;'
         echo 'ssl_session_timeout 2h;'
-        echo ''
-        echo 'ssl_dhparam /etc/nginx/dhparams.pem;'
     } > /etc/nginx/snippets/ssl.conf
 
     # Create NGINX PHP snippet
