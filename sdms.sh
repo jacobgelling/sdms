@@ -278,6 +278,8 @@ sdms_new() {
     } > "$sdms_home/.my.cnf"
 
     # Create PHP pool
+    sdms_php_max_children=$(( $(awk '/MemTotal/ {print int($2/1014000)}' /proc/meminfo) * 5 ))
+    [ "$sdms_php_max_children" -lt 1 ] && sdms_php_max_children=1
     {
         echo "[$sdms_domain]"
         echo "user = $sdms_username"
@@ -289,7 +291,7 @@ sdms_new() {
         echo "listen.allowed_clients = 127.0.0.1, ::1"
         echo ""
         echo "pm = ondemand"
-        echo "pm.max_children = 5"
+        echo "pm.max_children = $sdms_php_max_children"
         echo ""
         echo "security.limit_extensions = .php"
         echo ""
