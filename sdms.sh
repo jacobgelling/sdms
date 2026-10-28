@@ -91,6 +91,9 @@ sdms_deploy() {
         echo ''
         echo '\t\t# Accept SSH and web server traffic'
         echo '\t\ttcp dport { 22, 80, 443 } ct state new accept'
+        if [ "$(sed 's/\..*//' '/etc/debian_version')" -ge 13 ]; then
+            echo '\t\tudp dport 443 ct state new accept'
+        fi
         echo ''
         echo '\t\t# Accept ICMP traffic'
         echo '\t\tip protocol icmp accept'
@@ -163,7 +166,7 @@ sdms_deploy() {
         echo 'ssl_prefer_server_ciphers on;'
         echo ''
         echo 'ssl_session_cache shared:SSL:10m;'
-        echo 'ssl_session_timeout 2h;'
+        echo 'ssl_session_timeout 1h;'
     } > /etc/nginx/snippets/ssl.conf
 
     # Create NGINX PHP snippet
@@ -452,8 +455,15 @@ sdms_ssl() {
         if [ ! -z "${sdms_redirect_domain}" ]; then
             echo "# Redirect $sdms_redirect_domain to $sdms_domain"
             echo "server {"
-            echo "\tlisten 443 ssl http2;"
-            echo "\tlisten [::]:443 ssl http2;"
+            if [ "$(sed 's/\..*//' '/etc/debian_version')" -ge 13 ]; then
+                echo "\tlisten 443 ssl;"
+                echo "\tlisten [::]:443 ssl;"
+                echo "\tlisten 443 quic;"
+                echo "\tlisten [::]:443 quic;"
+            else
+                echo "\tlisten 443 ssl http2;"
+                echo "\tlisten [::]:443 ssl http2;"
+            fi
             echo "\tserver_name $sdms_redirect_domain;"
             echo ""
             echo "\tssl_certificate /etc/letsencrypt/live/$sdms_domain/fullchain.pem;"
@@ -478,8 +488,15 @@ sdms_ssl() {
         fi
         echo "# Serve website"
         echo "server {"
-        echo "\tlisten 443 ssl http2;"
-        echo "\tlisten [::]:443 ssl http2;"
+        if [ "$(sed 's/\..*//' '/etc/debian_version')" -ge 13 ]; then
+            echo "\tlisten 443 ssl;"
+            echo "\tlisten [::]:443 ssl;"
+            echo "\tlisten 443 quic;"
+            echo "\tlisten [::]:443 quic;"
+        else
+            echo "\tlisten 443 ssl http2;"
+            echo "\tlisten [::]:443 ssl http2;"
+        fi
         echo "\tserver_name $sdms_domain;"
         echo ""
         echo "\tssl_certificate /etc/letsencrypt/live/$sdms_domain/fullchain.pem;"
