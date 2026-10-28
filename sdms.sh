@@ -170,9 +170,6 @@ sdms_deploy() {
         echo 'ssl_session_cache shared:SSL:10m;'
         echo 'ssl_session_timeout 2h;'
         echo ''
-        echo 'ssl_stapling on;'
-        echo 'ssl_stapling_verify on;'
-        echo ''
         echo 'ssl_dhparam /etc/nginx/dhparams.pem;'
     } > /etc/nginx/snippets/ssl.conf
 
