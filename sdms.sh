@@ -163,7 +163,7 @@ sdms_deploy() {
         echo 'ssl_prefer_server_ciphers on;'
         echo ''
         echo 'ssl_session_cache shared:SSL:10m;'
-        echo 'ssl_session_timeout 2h;'
+        echo 'ssl_session_timeout 1h;'
     } > /etc/nginx/snippets/ssl.conf
 
     # Create NGINX PHP snippet
