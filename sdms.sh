@@ -592,7 +592,7 @@ sdms_delete() {
     userdel -r "$sdms_username"
 
     # Delete SSL certificate
-    certbot delete -n -q --cert-name "$sdms_domain"
+    certbot delete -n -q --cert-name "$sdms_domain" || true
 }
 
 # Backup server function
