@@ -18,7 +18,7 @@ SDMS is made available under the MIT licence.
   * Add domain
   * Remove domain
   * Let's Encrypt SSL
-* Backup of databases, SSL certificates, website files and configuration files
+* Backup of databases, SSL certificates, website files, and configuration files
 
 ## Usage
 ### Deploy server
@@ -52,4 +52,4 @@ The `--delete` option simply deletes the given domain, including it's web direct
 ```sh
 $ ./sdms.sh --backup
 ```
-The `--backup` option performs a dump of all databases, and a backup of all SSL certificates, website files and configuration files.
+The `--backup` option performs a dump of all databases, and a backup of all SSL certificates, website files, and configuration files.
